@@ -1,0 +1,2 @@
+The gcd is 1 
+the lcm is 31 	
