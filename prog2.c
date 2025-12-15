@@ -1,53 +1,49 @@
 #include <stdio.h>
-#include <string.h>
-#define SIZE 100
-int count(char a[])
-{
-    char curr = a[0];
-    int count = 0;
-    while (curr != '\0')
-    {
-        count++;
-        curr = a[count];
+#include <unistd.h>
+#include <semaphore.h>
+#include <stdlib.h>
+
+int main(){
+    sem_t sem;
+    if(sem_init(&sem,1,5)<0){
+        perror("Semaphore initialization failed \n");
+        exit(1);
     }
-    return count;
-}
-void copy(char *p1, char *p2)
-{
-    int c = 0;
-    while (*p1 != '\0')
-    {
-        c++;
-        p1++;
+    int val ;
+    if(sem_getvalue(&sem,&val)<0){
+         perror("Semaphore value access failed ");
+        exit(1);
     }
-    while (*p2 != '\0')
-    {
-        strcat(p1, p2);
-        p2++;
-        p1++;
+    fprintf(stdout,"Sem value %d \n",val);
+    if(sem_wait(&sem)<0){
+         perror("Semaphore value access failed ");
+        exit(1);
+
     }
-    fputs(p1, stdout);
-}
+    if(sem_getvalue(&sem,&val)<0){
+         perror("Semaphore value access failed ");
+        exit(1);
+    }
+    fprintf(stdout,"Sem value decremented %d \n",val);
+    if(sem_post(&sem)<0){
+         perror("Semaphore value access failed ");
+        exit(1);
 
-int main()
-{
-    char s[SIZE];
-    char a[SIZE];
+    }
+    if(sem_getvalue(&sem,&val)<0){
+         perror("Semaphore value access failed ");
+        exit(1);
+    }
+    fprintf(stdout,"Sem value incremented %d \n",val);
 
-    char b[SIZE];
+    if(sem_destroy(&sem)<0){
+        perror("Some error occured ");
+        exit(1);
+    }
+    fprintf(stdout,"Semaphore destroy successfull");
 
-    printf("Enter the String ");
-    // scanf("%s",a);
-    // printf("Your string is \t %s",a);
-    printf("Enter your strings \n");
-    fgets(a, SIZE, stdin);
-    fgets(b, SIZE, stdin);
-    // Read input into 'a'
-    // fputs(a, stdout);
 
-    // char k[] = "Hello";
-    printf("%d \n", count(a));
-    copy(a,b);
+
 
     return 0;
 }
